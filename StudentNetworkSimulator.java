@@ -482,14 +482,14 @@ public class StudentNetworkSimulator extends NetworkSimulator {
     // Use to print final statistics
     protected void Simulation_done() {
         // TO PRINT THE STATISTICS, FILL IN THE DETAILS BY PUTTING VARIBALE NAMES. DO NOT CHANGE THE FORMAT OF PRINTED OUTPUT
-        double  Ratio_lost = 0;
-        if(Num_retransBy_A - Num_corrupted_pkt < 0){
+        double Ratio_lost = 0;
+        if (Num_retransBy_A - Num_corrupted_pkt < 0) {
             Ratio_lost = 0;
-        }else{
-            Ratio_lost = (double)(Num_retransBy_A - Num_corrupted_pkt)/(double)((Num_originalPkt_transBy_A+Num_retransBy_A)+Num_Ackpkt_sentBy_B);
+        } else {
+            Ratio_lost = (double) (Num_retransBy_A - Num_corrupted_pkt) / (double) ((Num_originalPkt_transBy_A + Num_retransBy_A) + Num_Ackpkt_sentBy_B);
         }
 
-        double  Ratio_corrupted = (double)Num_corrupted_pkt / (double)((Num_originalPkt_transBy_A+Num_retransBy_A)+ Num_Ackpkt_sentBy_B-(Num_retransBy_A-Num_corrupted_pkt));
+        double Ratio_corrupted = (double) Num_corrupted_pkt / (double) ((Num_originalPkt_transBy_A + Num_retransBy_A) + Num_Ackpkt_sentBy_B - (Num_retransBy_A - Num_corrupted_pkt));
         System.out.println("\n\n===============STATISTICS=======================");
         System.out.println("Number of original packets transmitted by A:" + Num_originalPkt_transBy_A);
         System.out.println("Number of retransmissions by A:" + Num_retransBy_A);
@@ -498,8 +498,8 @@ public class StudentNetworkSimulator extends NetworkSimulator {
         System.out.println("Number of corrupted packets:" + Num_corrupted_pkt);
         System.out.println("Ratio of lost packets:" + Ratio_lost);
         System.out.println("Ratio of corrupted packets:" + Ratio_corrupted);
-        System.out.println("Average RTT:" + total_rtt/rttCount);
-        System.out.println("Average communication time:" + total_commun/communCount);
+        System.out.println("Average RTT:" + total_rtt / rttCount);
+        System.out.println("Average communication time:" + total_commun / communCount);
         System.out.println("==================================================");
 
         // PRINT YOUR OWN STATISTIC HERE TO CHECK THE CORRECTNESS OF YOUR PROGRAM
