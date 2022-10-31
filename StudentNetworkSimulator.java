@@ -1,3 +1,5 @@
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
+
 import java.util.*;
 import java.io.*;
 
@@ -97,6 +99,69 @@ public class StudentNetworkSimulator extends NetworkSimulator
     // these variables to send messages error free!  They can only hold
     // state information for A or B.
     // Also add any necessary methods (e.g. checksum of a String)
+
+    // variables for statistics
+    private int Num_originalPkt_transBy_A = 0;
+    private int Num_retransBy_A = 0;
+    private int Num_delivered_to_Layter5_atB = 0;
+    private int Num_Ackpkt_sentBy_B = 0;
+    private int Num_corrupted_pkt = 0;
+    private double loss_ratio = 0;
+    private double corrupted_ratio = 0;
+
+    private Map<Integer,Double> rtt_map = new HashMap<Integer,Double>();
+    private double rttCount = 0.0;
+    private double total_rtt = 0.0;
+
+    private Map<Integer,Double> commun_Map = new HashMap<Integer,Double>();
+    private double communCount = 0;
+    private double total_commun = 0.0;
+
+    // Variables denoting A's states
+    private LinkedList<Packet> sender_buffer = new LinkedList<>();
+    private LinkedList<Integer> ack_buffer = new LinkedList<>();
+    // private Packet[] SWS; //Sender Window
+    private int send_base; //index of last unacked packet
+    private int next_seq;//next packet sequnce number
+    private int LPS; // Last packet sent
+
+    /*
+     * B variables and functions
+     */
+    private int RWS; // receive window size
+    private int NPE; // next packet expected
+    private int b_acknum; // b's acknum
+    private int b_checksum; // b's checksum
+    private int[] sack = {-1, -1, -1, -1, -1}; // b's sack
+    private LinkedList<Packet> sack_buffer = new LinkedList<Packet>(); // b's sack buffer
+
+    private void bSendPkt(int seqNum, int[] sack) {
+        b_checksum = seqNum + b_acknum;
+        Packet pkt = new Packet(seqNum, b_acknum, b_checksum, sack);
+        toLayer3(B, pkt);
+        Num_Ackpkt_sentBy_B++;
+        System.out.print("sack is: [ ");
+        for (int i = 0; i < 5; i++)
+        {
+            if (sack[i] == -1)
+            {
+                break;
+            }
+            System.out.print(sack[i] + " ");
+        }
+        System.out.println("]");
+    }
+
+    private int Checksumming(Packet packet) {
+        String payload = packet.getPayload();
+        int checksum = packet.getSeqnum() + packet.getAcknum();
+
+        for (char c : payload.toCharArray()) {
+            checksum += (c - 'a');
+        }
+
+        return checksum;
+    }
 
     // This is the constructor.  Don't touch!
     public StudentNetworkSimulator(int numMessages,
