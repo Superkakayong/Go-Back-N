@@ -196,7 +196,29 @@ public class StudentNetworkSimulator extends NetworkSimulator {
     // the data in such a message is delivered in-order, and correctly, to
     // the receiving upper layer.
     protected void aOutput(Message message) {
+        next_seq = LPS % LimitSeqNo;
+        Packet sender_packet = new Packet(next_seq, 0, -1, message.getData());
+        sender_packet.setChecksum(checksumming(sender_packet));
+        sender_buffer.add(sender_packet);
+        ack_buffer.add(0);
 
+        System.out.println("sender buffer size is " + sender_buffer.size());
+        System.out.println("LPS is " + LPS);
+        System.out.println("Send_base is " + send_base);
+        System.out.println("window siez is " + WindowSize);
+
+        // travers the send window to see if there is any unsent packet then send it.
+        for (LPS = send_base; LPS < sender_buffer.size() && LPS < send_base + WindowSize; LPS++) {
+            if (sender_buffer.get(LPS) != null && ack_buffer.get(LPS) == 0) {
+                Num_originalPkt_transBy_A++;
+                toLayer3(A, sender_buffer.get(LPS));
+                rtt_map.put(LPS,getTime());
+                commun_Map.put(LPS,getTime());
+                ack_buffer.set(LPS,1); // set 1 in ack_buffer to indicate this packet has been sent but not acked yet
+                stopTimer(A);
+                startTimer(A, RxmtInterval);
+            }
+        }
     }
 
     // This routine will be called whenever a packet sent from the B-side 
